@@ -13,27 +13,25 @@
         function submit() {
             var zip = $("#zip").val();
             var price = $("#price option:selected").index();
-            var radius = $("#radius").val();
-            console.log("called submit");
-            console.log(zip);
-            console.log(price);
-            console.log(radius);
+            price = price == 0 ? 1 : price-1;
+            //convert miles to meters
+            var radius = 1609.34 * $("#radius").val();
+            //console.log("called submit");
+            //console.log("price" + price);
+            //console.log(radius);
 
     var lat = '';
     var lng = '';
     var address = zip;
-    geocoder.geocode({ 'address': address}, function(results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-         lat = results[0].geometry.location.lat();
-         lng = results[0].geometry.location.lng();
-        }
-       else {
-        alert("Geocode was not successful for the following reason: " + status);
-        }
-    });
-    alert('Latitude: ' + lat + ' Logitude: ' + lng);
+    $.get("/zip?zip=" + zip, {},
+        function(data, textStatus) {
+            var json = JSON.parse(data);
+            //console.log(json.lat);
+            //console.log(json.lon);
+            window.location.href = "/show?max_price="+price+"&radius="+radius+"&lat="+json.lat+"&lon="+json.lon;
+        });
 
-    $.post("/api",
+    $.get("/show",
         {
           "zip": zip,
           "price": price,
@@ -41,7 +39,7 @@
         }
         ,function(data, textStatus) {
           console.log(data);
-        });
+    });
         }
 
         window.onload = function(e) {

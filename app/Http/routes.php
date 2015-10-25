@@ -15,7 +15,10 @@ Route::get('/api', 'ApiController@index');
 Route::post('/api', 'ApiController@index');
 //homepage
 Route::get('/', 'HomeController@index');
+Route::get('/show', 'HomeController@show');
+//post just in case lolol
+Route::post('/', 'HomeController@index');
+Route::post('/show', 'HomeController@show');
 //return zip codes
 Route::post('/zip', 'ZipController@index');
 Route::get('/zip', 'ZipController@index');
-

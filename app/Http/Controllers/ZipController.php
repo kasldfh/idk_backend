@@ -20,7 +20,6 @@ class ZipController extends Controller
         $code = Request::input('zip');
         $zip = DB::table('zip')->where('zip', $code)->first();
         $json = json_encode($zip);
-        dd($json);
         return $json;
     }
 
