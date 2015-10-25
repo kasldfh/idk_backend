@@ -15,6 +15,10 @@ class DatabaseSeeder extends Seeder
         Model::unguard();
 
         // $this->call(UserTableSeeder::class);
+        $this->call('ZipTableSeeder');
+        $this->call('ZipTableSeeder2');
+        $this->call('ZipTableSeeder3');
+        $this->call('ZipTableSeeder4');
 
         Model::reguard();
     }

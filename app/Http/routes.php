@@ -10,9 +10,12 @@
 | and give it the controller to call when that URI is requested.
 |
 */
+//api response
+Route::get('/api', 'ApiController@index');
+Route::post('/api', 'ApiController@index');
+//homepage
+Route::get('/', 'HomeController@index');
+//return zip codes
+Route::post('/zip', 'ZipController@index');
+Route::get('/zip', 'ZipController@index');
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/', 'ApiController@index');

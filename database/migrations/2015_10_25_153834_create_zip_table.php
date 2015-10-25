@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateActivityTypesTable extends Migration
+class CreateZipTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,10 +12,12 @@ class CreateActivityTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('activity_types', function (Blueprint $table) {
+        Schema::create('zip', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
-            $table->string('activity');
+            $table->string('zip');
+            $table->string('lat');
+            $table->string('lon');
         });
     }
 
@@ -26,6 +28,6 @@ class CreateActivityTypesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('activity_types');
+        Schema::drop('zip');
     }
 }
