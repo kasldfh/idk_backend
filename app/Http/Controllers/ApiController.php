@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use View;
+use Request;
 
 class ApiController extends Controller
 {
@@ -42,17 +42,27 @@ class ApiController extends Controller
             "spa",
             "zoo"
         ];
-        $radius = 40233;
-        //selected types
-        $selected = "";
-        $min_price = 1;
-        $max_price = 3;
-        $lat = "-33.8669710";
-        $lon = "151.1958750";
+
+        $radius = Request::input('radius');
+        $max_price = Request::input('max_price');
+        $lat = Request::input('lat');
+        $lon = Request::input('lon');
+        $last_token = Request::input('last_token');
+        $min_price = 0;
+
+        ////TODO: remove
+        //$radius = 40233;
+        ////selected types
+        //$min_price = 1;
+        //$max_price = 3;
+        //$lat = "-33.8669710";
+        //$lon = "151.1958750";
+
         //indexes we have already used
         $nums = [];
         $nums[] = -1;
         $r = -1;
+        $selected = "";
         for($i = 0; $i < 5; $i++) {
             while(in_array($r, $nums)) {
                 $r = rand(0, sizeof($types)-1);
@@ -69,84 +79,37 @@ class ApiController extends Controller
             . '&types=' . $selected  
             . '&minprice=' . $min_price
             . '&maxprice=' . $max_price 
-            . '&key=AIzaSyCslER7GnUDG3C241cqQDxidKMsbuwU1VU');
-        $http_q = json_decode($http_resp);
+            . '&key=AIzaSyCslER7GnUDG3C241cqQDxidKMsbuwU1VU'
+            . '&pagetoken=' . $last_token);
+        $http_resp = json_decode($http_q, true);
+        //dd($http_resp);
+
+        //prepare response
         
-        //$response = [];
-        //$response["name"] = 
+        $items = [];
+        foreach($http_resp["results"] as $result) {
+            $item = [];
+            $item["name"] = $result["name"];
+            $item["price_level"] = $result["price_level"];
+            $item["rating"] = array_key_exists("rating", $result) ? 
+                $result["rating"] : "";
+            $item["vicinity"] = $result["vicinity"];
+            $item["icon"] = $result["icon"];
+            $item["types"] = $result["types"];
 
 
-        dd($response);
+            if(array_key_exists("opening_hours", $result) && 
+                $result["opening_hours"]["open_now"])
+                $items[] = $item;
+        }
+        $response = [];
+        $response["next_page_token"] = $http_resp["next_page_token"];
+        $response["items"] = $items;
 
-        return $response;
-        //$response = file_get_contents('https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8669710,151.1958750&key=AIzaSyCslER7GnUDG3C241cqQDxidKMsbuwU1VU');
-        //return View::make('welcome', ['response' => $response]);
-        return View::make('welcome', compact('response'));
+
+        $json_resp = json_encode($response);
+
+        return $json_resp;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }
