@@ -1,65 +1,55 @@
-<!DOCTYPE html>
-<html>
- 
-<head>
- 
- <style type="text/css">background-image: url("/concrete_seamless.png");</style>
- 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
- 
-    <link rel="stylesheet" href="IDKstyle.css">
-    <link rel="shortcut icon" href=url(favcion.ico)>
+@extends('layout')
+@section('js')
     <script>
-    document.onload = function(e) {
-}
+        //TODO: call reroll method instead of getOptions to reduce api calls
         function reRoll() {
+            
         }
-    function getOptions() {
-        var radius = $("#radius").val();
-        var lat = $("#lat").val();
-        var lon = $("#lon").val();
-        var max_price = $("#max_price").val();
-        var last_token = $("#last_token").val();
-        $.post("/api",
-            {
-                "radius": radius,
-                "lat": lat,
-                "lon": lon,
-                "max_price": max_price,
-                "last_token": last_token
-             },
-             function(data, textStatus) {
-                //console.log(data);
-                var json = JSON.parse(data);
-                var items = json.items;
-                var rand = Math.floor(Math.random() * items.length);
-                console.log("random" + rand);
-                var item = items[rand];
-                $("#name_listing").text(item.name);
 
-                var price_text = "Price Level: ";
-                for(var i = 0; i < item.price_level; i++) {
-                    price_text += "$";
-                }
+        function getOptions() {
+            //get request parameters
+            var radius = $("#radius").val();
+            var lat = $("#lat").val();
+            var lon = $("#lon").val();
+            var max_price = $("#max_price").val();
+            var last_token = $("#last_token").val();
+            //get options from api
+            $.post("/api",
+                {
+                    "radius": radius,
+                    "lat": lat,
+                    "lon": lon,
+                    "max_price": max_price,
+                    "last_token": last_token
+                 },
+                 function(data, textStatus) {
+                    //decode returned value
+                    var json = JSON.parse(data);
+                    var items = json.items;
+                    //choose random item
+                    var rand = Math.floor(Math.random() * items.length);
+                    var item = items[rand];
+                    
+                    //set listing elements to item attributes
+                    $("#name_listing").text(item.name);
 
-                $("#pricing_listing").text(price_text);
-                if(item.rating !== "") {
-                    $("#rating_listing").text(item.rating + " Stars");
-                }
-                $("#address_listing").text(item.vicinity);
+                    var price_text = "Price Level: ";
+                    for(var i = 0; i < item.price_level; i++) {
+                        price_text += "$";
+                    }
 
-                
-
-
-                console.log(item);
-                console.log(item.name);
-             });
+                    $("#pricing_listing").text(price_text);
+                    if(item.rating !== "") {
+                        $("#rating_listing").text(item.rating + " Stars");
+                    }
+                    $("#address_listing").text(item.vicinity);
+                 }
+            );
         }
     </script>
+@endsection
  
-</head>
-  <body>
+@section('content')
     <input type="hidden" id="radius" name="radius" value="{!!$radius!!}"></input>
     <input type="hidden" id="max_price" name="max_price" value="{!!$max_price!!}"></input>
     <input type="hidden" id="lat" name="lat" value="{!!$lat!!}"></input>
@@ -68,36 +58,36 @@
     <script>
         getOptions();
     </script>
-        <div class="titleBar">
-                <h1>IDK</h1>
-        </div>
-        <div class="container mainContainer img-rounded">
-        <div class="form-group col-lg-4 col-lg-offset-4">
-            <h2 id="name_listing"></h2>
-        </div>
-        <hr style="width: 50%;">
-            
-        <div class="form-group col-lg-4 col-lg-offset-4">
-            <h2 id="pricing_listing"></h2>
-        </div>
-            
-        <hr style="width: 50%;">
-        <div class="form-group col-lg-4 col-lg-offset-4">
-            <h2 id="rating_listing"></h2>
-        </div>
-        <hr style="width: 50%;">
 
-        <div class="form-group col-lg-4 col-lg-offset-4">
-            <h2 id="address_listing"></h2>
-        </div>
-        <hr style="width: 50%; color: white;">
-        
+        <div class="container mainContainer img-rounded">
+            {{-- item name --}}
+            <div class="form-group col-lg-4 col-lg-offset-4">
+                <h2 id="name_listing"></h2>
+            </div>
+            <hr style="width: 50%;">
+                
+            {{-- item price --}}
+            <div class="form-group col-lg-4 col-lg-offset-4">
+                <h2 id="pricing_listing"></h2>
+            </div>
+            <hr style="width: 50%;">
+
+            {{-- item rating --}}
+            <div class="form-group col-lg-4 col-lg-offset-4">
+                <h2 id="rating_listing"></h2>
+            </div>
+            <hr style="width: 50%;">
+
+            {{-- item address --}}
+            <div class="form-group col-lg-4 col-lg-offset-4">
+                <h2 id="address_listing"></h2>
+            </div>
+            <hr style="width: 50%; color: white;">
             
-        <div class="form-group col-lg-4 col-lg-offset-4">
-            <button class="btn btn-primary" onclick="getOptions()">Re-Roll</button>
-        </div>
-        <hr style="width: 50%;">
+            {{-- reroll button --}}
+            <div class="form-group col-lg-4 col-lg-offset-4">
+                <button class="btn btn-primary" onclick="getOptions()">Re-Roll</button>
+            </div>
+            <hr style="width: 50%;">
     </div>
-   
-  </body>
-</html>
+@endsection

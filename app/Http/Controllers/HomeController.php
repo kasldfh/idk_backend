@@ -11,7 +11,7 @@ use Route;
 class HomeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Show the input page
      *
      * @return \Illuminate\Http\Response
      */
@@ -21,30 +21,26 @@ class HomeController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * show the results for given location
      *
      * @return \Illuminate\Http\Response
      */
     public function show()
     {
-        
         $radius = Request::input('radius');
         $max_price = Request::input('max_price');
-        $lat = Request::input('lat');
-        $lon = Request::input('lon');
+        $zip = Request::input('zip');
         $last_token = Request::input('last_token');
 
-        //$params = [
-        //    'radius' => $radius,
-        //    'max_price' => $max_price,
-        //    'lat' => $lat,
-        //    'lon' => $lon,
-        //    'last_token' => $last_token
-        //];
-        //dd($params);
-        //$request = Request::create('api/', 'POST', $params);
-    
+        //get lat and long for the zip code
+        //TODO: if we get from db directly it is more efficient
+        $request = Request::create('zip/', 'POST', ['zip' => $zip]);
+        $response = Route::dispatch($request)->getContent();
+        $coords = json_decode($response, true);
+
+        $lat = $coords['lat'];
+        $lon = $coords['lon'];
+
         return View::make('show', compact('radius', 'max_price', 'lat', 'lon', 'last_token'));
     }
-
 }
