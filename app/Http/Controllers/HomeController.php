@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use View;
 use Request;
 use Route;
+use DB;
 
 class HomeController extends Controller
 {
@@ -33,13 +34,10 @@ class HomeController extends Controller
         $last_token = Request::input('last_token');
 
         //get lat and long for the zip code
-        //TODO: if we get from db directly it is more efficient
-        $request = Request::create('zip/', 'POST', ['zip' => $zip]);
-        $response = Route::dispatch($request)->getContent();
-        $coords = json_decode($response, true);
-
-        $lat = $coords['lat'];
-        $lon = $coords['lon'];
+        $code = Request::input('zip');
+        $coords = DB::table('zip')->where('zip', $code)->first();
+        $lat = $coords->lat;
+        $lon = $coords->lon;
 
         return View::make('show', compact('radius', 'max_price', 'lat', 'lon', 'last_token'));
     }
